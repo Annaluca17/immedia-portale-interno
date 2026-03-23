@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Accesso Portale — Immedia S.p.A.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0B1F3A;
+      --navy-mid:   #122847;
+      --navy-light: #1A3559;
+      --gold:       #C9A84C;
+      --gold-light: #E2C47A;
+      --red-alert:  #C0392B;
+      --white:      #F8F9FA;
+      --text-dim:   #8A9BB5;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background-color: var(--navy);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Background Texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(201,168,76,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 90% 100%, rgba(26,53,89,0.8) 0%, transparent 70%);
+      z-index: -1;
+    }
+
+    /* LOGIN OVERLAY */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background-color: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+
+    #login-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(201, 168, 76, 0.2);
+      padding: 40px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    .login-logo {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border-radius: 15px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      color: var(--navy);
+      font-size: 24px;
+    }
+
+    .login-card h2 {
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    .login-card p {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--gold);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: white;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--gold);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .login-btn {
+      width: 100%;
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      margin-top: 10px;
+    }
+
+    .login-btn:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+    }
+
+    #login-error {
+      color: #E74C3C;
+      font-size: 13px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    /* MAIN CONTENT WRAPPER */
+    #main-portal {
+      display: none; /* Nascosto di default */
+    }
+
+    /* (Resto degli stili originali condensati per brevità) */
+    .wrapper { max-width: 960px; margin: 0 auto; padding: 0 24px 80px; position: relative; z-index: 1; }
+    header { display: flex; align-items: center; gap: 20px; padding: 40px 0 0; }
+    .logo-mark { width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 24px rgba(201,168,76,0.3); }
+    .logo-mark span { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--navy); }
+    .brand-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--white); }
+    .brand-sub { font-size: 11px; font-weight: 500; color: var(--gold); letter-spacing: 2.5px; text-transform: uppercase; }
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.3; margin: 28px 0; }
+    .hero { text-align: center; padding: 20px 0 40px; }
+    .hero-label { display: inline-block; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,168,76,0.3); padding: 6px 16px; border-radius: 100px; margin-bottom: 20px; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px, 5vw, 44px); line-height: 1.15; margin-bottom: 14px; }
+    .hero h1 em { font-style: normal; color: var(--gold-light); }
+    .hero p { font-size: 15px; color: var(--text-dim); max-width: 520px; margin: 0 auto; }
+    .disclaimer { background: rgba(192,57,43,0.12); border: 1px solid rgba(192,57,43,0.5); border-left: 4px solid var(--red-alert); border-radius: 10px; padding: 18px 22px; margin-bottom: 44px; display: flex; gap: 16px; }
+    .disclaimer-body strong { display: block; font-size: 13px; color: #E74C3C; text-transform: uppercase; margin-bottom: 6px; }
+    .disclaimer-body p { font-size: 13px; color: #F1948A; }
+    .grid-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 20px; }
+    .apps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 18px; }
+    .app-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 28px; text-decoration: none; display: flex; flex-direction: column; gap: 18px; transition: all 0.25s ease; position: relative; overflow: hidden; }
+    .app-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.06); border-color: rgba(201,168,76,0.3); }
+    .card-top { display: flex; justify-content: space-between; }
+    .card-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .card-icon.blue { background: rgba(41,128,185,0.2); color: #5DADE2; }
+    .card-icon.green { background: rgba(39,174,96,0.2); color: #58D68D; }
+    .card-icon.gold { background: rgba(201,168,76,0.2); color: var(--gold-light); }
+    .card-icon.purple { background: rgba(142,68,173,0.2); color: #BB8FCE; }
+    .card-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--white); margin-bottom: 6px; }
+    .card-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px; }
+    .card-url { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); }
+    footer { margin-top: 60px; padding: 24px 0; border-top: 1px solid rgba(255,255,255,0.07); display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); }
+    
+    @media (max-width: 600px) { .apps-grid { grid-template-columns: 1fr; } footer { flex-direction: column; gap: 10px; } }
+  </style>
+</head>
+<body>
+
+  <!-- SCHERMATA DI LOGIN -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-logo">Im</div>
+      <h2>Portale Riservato</h2>
+      <p>Inserisci le credenziali aziendali per accedere alle applicazioni interne.</p>
+      
+      <div class="form-group">
+        <label>Nome Utente</label>
+        <input type="text" id="username" placeholder="Inserisci username">
+      </div>
+      
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••">
+      </div>
+      
+      <button class="login-btn" onclick="checkLogin()">Accedi al Portale</button>
+      <p id="login-error">Credenziali non valide. Riprova.</p>
+    </div>
+  </div>
+
+  <!-- CONTENUTO DEL PORTALE -->
+  <div id="main-portal">
+    <div class="wrapper">
+      <header>
+        <div class="logo-mark"><span>Im</span></div>
+        <div class="brand-text">
+          <div class="brand-name">Immedia S.p.A.</div>
+          <div class="brand-sub">Soluzioni digitali per la PA</div>
+        </div>
+        <button onclick="logout()" style="margin-left: auto; background: none; border: 1px solid rgba(255,255,255,0.2); color: var(--text-dim); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Logout</button>
+      </header>
+
+      <div class="divider"></div>
+
+      <section class="hero">
+        <div class="hero-label">Portale Applicazioni Interne</div>
+        <h1>Strumenti <em>operativi</em><br>per il personale</h1>
+        <p>Accesso centralizzato alle applicazioni di calcolo e gestione ad uso esclusivo interno.</p>
+      </section>
+
+      <div class="disclaimer">
+        <div class="disclaimer-body">
+          <strong>⚠ Accesso Riservato — USO INTERNO ESCLUSIVO</strong>
+          <p>Le applicazioni contenute in questo portale sono ad uso esclusivo del personale Immedia S.p.A.</p>
+        </div>
+      </div>
+
+      <div class="grid-label">04 Applicazioni disponibili</div>
+      <div class="apps-grid">
+        <!-- App 1 -->
+        <a class="app-card" href="https://f24ep-ravvedimento.vercel.app" target="_blank">
+          <div class="card-top">
+            <div class="card-icon blue">📦</div>
+            <div style="font-family: 'DM Mono'; font-size: 11px; color: var(--text-dim);">APP 01</div>
+          </div>
+          <div>
+            <div class="card-title">Ravvedimento Operoso F24EP</div>
+            <div class="card-desc">Calcolo del ravvedimento operoso e delle sanzioni per tardivo invio.</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-url">f24ep-ravvedimento.vercel.app</div>
+          </div>
+        </a>
+
+        <!-- App 2 -->
+        <a class="app-card" href="https://rivaluta-facile.vercel.app" target="_blank">
+          <div class="card-top">
+            <div class="card-icon green">📈</div>
+            <div style="font-family: 'DM Mono'; font-size: 11px; color: var(--text-dim);">APP 02</div>
+          </div>
+          <div>
+            <div class="card-title">Rivalutazione e Interessi Legali</div>
+            <div class="card-desc">Calcolo degli interessi legali e rivalutazione delle somme su base ISTAT.</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-url">rivaluta-facile.vercel.app</div>
+          </div>
+        </a>
+
+        <!-- App 3 -->
+        <a class="app-card" href="https://preventivatore-inky.vercel.app" target="_blank">
+          <div class="card-top">
+            <div class="card-icon gold">💼</div>
+            <div style="font-family: 'DM Mono'; font-size: 11px; color: var(--text-dim);">APP 03</div>
+          </div>
+          <div>
+            <div class="card-title">Preventivatore Service Paghe</div>
+            <div class="card-desc">Calcolo preventivi per servizi di gestione paghe e personale.</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-url">preventivatore-inky.vercel.app</div>
+          </div>
+        </a>
+
+        <!-- App 4 -->
+        <a class="app-card" href="https://cedolino-enti-locali.vercel.app" target="_blank">
+          <div class="card-top">
+            <div class="card-icon purple">📄</div>
+            <div style="font-family: 'DM Mono'; font-size: 11px; color: var(--text-dim);">APP 04</div>
+          </div>
+          <div>
+            <div class="card-title">Cedolino Enti Locali</div>
+            <div class="card-desc">Anteprima e calcolo del cedolino stipendiale per dipendenti.</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-url">cedolino-enti-locali.vercel.app</div>
+          </div>
+        </a>
+      </div>
+
+      <footer>
+        <div>© 2026 <strong>Immedia S.p.A.</strong> — P.IVA 02154040808</div>
+        <div style="font-family: 'DM Mono'; letter-spacing: 1px;">v1.0 · Portale Interno</div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // --- CONFIGURAZIONE CREDENZIALI (Esempio) ---
+    const VALID_USER = "immedia";
+    const VALID_PASS = "admin2024"; 
+
+    // Controllo se l'utente è già loggato (sessione salvata)
+    window.onload = function() {
+      if (localStorage.getItem("isLoggedIn") === "true") {
+        showPortal();
+      }
+    };
+
+    function checkLogin() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      const errorMsg = document.getElementById("login-error");
+
+      if (user === VALID_USER && pass === VALID_PASS) {
+        localStorage.setItem("isLoggedIn", "true");
+        showPortal();
+      } else {
+        errorMsg.style.display = "block";
+        // Feedback visivo errore
+        document.querySelector(".login-card").style.animation = "shake 0.4s";
+        setTimeout(() => { document.querySelector(".login-card").style.animation = ""; }, 400);
+      }
+    }
+
+    function showPortal() {
+      document.getElementById("login-screen").classList.add("hidden");
+      document.getElementById("main-portal").style.display = "block";
+    }
+
+    function logout() {
+      localStorage.removeItem("isLoggedIn");
+      location.reload();
+    }
+
+    // Aggiungi invio con tasto Enter
+    document.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        checkLogin();
+      }
+    });
+  </script>
+
+  <style>
+    /* Animazione per errore */
+    @keyframes shake {
+      0%, 100% {transform: translateX(0);}
+      25% {transform: translateX(-10px);}
+      75% {transform: translateX(10px);}
+    }
+  </style>
+</body>
+</html>
