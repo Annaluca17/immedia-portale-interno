@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portale Applicazioni Interne — Immedia S.p.A.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0B1F3A;
+      --navy-mid:   #122847;
+      --navy-light: #1A3559;
+      --gold:       #C9A84C;
+      --gold-light: #E2C47A;
+      --red-alert:  #C0392B;
+      --red-light:  #FADBD8;
+      --white:      #F8F9FA;
+      --gray-soft:  #D4DCE8;
+      --text-dim:   #8A9BB5;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background-color: var(--navy);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Background texture ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(201,168,76,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 90% 100%, rgba(26,53,89,0.8) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Subtle grid */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 40px 0 0;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .logo-mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 24px rgba(201,168,76,0.3);
+    }
+
+    .logo-mark span {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -1px;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--gold);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.3;
+      margin: 28px 0;
+      animation: fadeIn 0.8s ease 0.2s both;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 20px 0 40px;
+      animation: fadeUp 0.7s ease 0.1s both;
+    }
+
+    .hero-label {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--gold-light);
+    }
+
+    .hero p {
+      font-size: 15px;
+      color: var(--text-dim);
+      max-width: 520px;
+      margin: 0 auto;
+      font-weight: 300;
+    }
+
+    /* ── DISCLAIMER BANNER ── */
+    .disclaimer {
+      background: rgba(192,57,43,0.12);
+      border: 1px solid rgba(192,57,43,0.5);
+      border-left: 4px solid var(--red-alert);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 44px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      animation: fadeUp 0.7s ease 0.25s both;
+    }
+
+    .disclaimer-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(192,57,43,0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .disclaimer-icon svg {
+      width: 18px;
+      height: 18px;
+      color: var(--red-alert);
+    }
+
+    .disclaimer-body strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #E74C3C;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .disclaimer-body p {
+      font-size: 13px;
+      color: #F1948A;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* ── GRID ── */
+    .grid-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+      animation: fadeUp 0.7s ease 0.3s both;
+    }
+
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 18px;
+    }
+
+    /* ── APP CARD ── */
+    .app-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 28px;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      cursor: pointer;
+      transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .app-card:hover {
+      transform: translateY(-4px);
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(201,168,76,0.3);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.15);
+    }
+
+    .app-card:hover::before { opacity: 1; }
+
+    .app-card:nth-child(1) { animation: fadeUp 0.6s ease 0.35s both; }
+    .app-card:nth-child(2) { animation: fadeUp 0.6s ease 0.45s both; }
+    .app-card:nth-child(3) { animation: fadeUp 0.6s ease 0.55s both; }
+    .app-card:nth-child(4) { animation: fadeUp 0.6s ease 0.65s both; }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-icon svg { width: 22px; height: 22px; }
+
+    .card-icon.blue   { background: rgba(41,128,185,0.2);  color: #5DADE2; }
+    .card-icon.green  { background: rgba(39,174,96,0.2);   color: #58D68D; }
+    .card-icon.gold   { background: rgba(201,168,76,0.2);  color: var(--gold-light); }
+    .card-icon.purple { background: rgba(142,68,173,0.2);  color: #BB8FCE; }
+
+    .card-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .card-url {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+    }
+
+    .card-arrow {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .app-card:hover .card-arrow {
+      background: rgba(201,168,76,0.2);
+      transform: translate(2px, -2px);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 60px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      animation: fadeIn 0.8s ease 0.8s both;
+    }
+
+    .footer-left {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .footer-left strong { color: var(--gold); }
+
+    .footer-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 5px 12px;
+      border-radius: 100px;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .apps-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 26px; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="logo-mark"><span>Im</span></div>
+    <div class="brand-text">
+      <div class="brand-name">Immedia S.p.A.</div>
+      <div class="brand-sub">Soluzioni digitali per la PA</div>
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <section class="hero">
+    <div class="hero-label">Portale Applicazioni Interne</div>
+    <h1>Strumenti <em>operativi</em><br>per il personale</h1>
+    <p>Accesso centralizzato alle applicazioni di calcolo e gestione ad uso esclusivo interno.</p>
+  </section>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <div class="disclaimer-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+      </svg>
+    </div>
+    <div class="disclaimer-body">
+      <strong>⚠ Accesso Riservato — USO INTERNO ESCLUSIVO</strong>
+      <p>
+        Le applicazioni contenute in questo portale sono ad uso esclusivo del personale <strong style="color:#E74C3C;">Immedia S.p.A.</strong>
+        È <strong style="color:#E74C3C;">vietata</strong> la divulgazione, la condivisione e qualsiasi utilizzo al di fuori del contesto lavorativo interno.
+        La diffusione a soggetti terzi non autorizzati costituisce violazione delle policy aziendali.
+      </p>
+    </div>
+  </div>
+
+  <!-- APP GRID -->
+  <div class="grid-label">04 Applicazioni disponibili</div>
+  <div class="apps-grid">
+
+    <a class="app-card" href="https://f24ep-ravvedimento.vercel.app" target="_blank" rel="noopener noreferrer">
+      <div class="card-top">
+        <div class="card-icon blue">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185z"/>
+          </svg>
+        </div>
+        <div class="card-number">APP 01</div>
+      </div>
+      <div>
+        <div class="card-title">Ravvedimento Operoso F24EP</div>
+        <div class="card-desc">Calcolo del ravvedimento operoso e delle sanzioni per tardivo invio. Gestione tributi con interessi legali pro-rata temporis.</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-url">f24ep-ravvedimento.vercel.app</div>
+        <div class="card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+
+    <a class="app-card" href="https://rivaluta-facile.vercel.app" target="_blank" rel="noopener noreferrer">
+      <div class="card-top">
+        <div class="card-icon green">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/>
+          </svg>
+        </div>
+        <div class="card-number">APP 02</div>
+      </div>
+      <div>
+        <div class="card-title">Rivalutazione e Interessi Legali</div>
+        <div class="card-desc">Calcolo degli interessi legali e rivalutazione delle somme su base ISTAT. Aggiornamento automatico degli indici.</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-url">rivaluta-facile.vercel.app</div>
+        <div class="card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+
+    <a class="app-card" href="https://preventivatore-inky.vercel.app" target="_blank" rel="noopener noreferrer">
+      <div class="card-top">
+        <div class="card-icon gold">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25V13.5zm0 2.25h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25V18zm2.498-6.75h.007v.008h-.007v-.008zm0 2.25h.007v.008h-.007V13.5zm0 2.25h.007v.008h-.007v-.008zm0 2.25h.007v.008h-.007V18zm2.504-6.75h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V13.5zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V18zm2.498-6.75h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V13.5zM8.25 6h7.5v2.25h-7.5V6zM12 2.25c-1.892 0-3.758.11-5.593.322C5.307 2.7 4.5 3.757 4.5 4.981V24a.75.75 0 001.053.69l1.197-.55 1.197.55a.75.75 0 00.636 0l1.197-.55 1.197.55a.75.75 0 00.636 0l1.197-.55 1.197.55a.75.75 0 001.053-.69V4.981c0-1.224-.807-2.281-1.907-2.409A41.404 41.404 0 0012 2.25z"/>
+          </svg>
+        </div>
+        <div class="card-number">APP 03</div>
+      </div>
+      <div>
+        <div class="card-title">Preventivatore Service Paghe</div>
+        <div class="card-desc">Calcolo preventivi per servizi di gestione paghe e personale. Configurazione parametri per enti clienti.</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-url">preventivatore-inky.vercel.app</div>
+        <div class="card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+
+    <a class="app-card" href="https://cedolino-enti-locali.vercel.app" target="_blank" rel="noopener noreferrer">
+      <div class="card-top">
+        <div class="card-icon purple">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z"/>
+          </svg>
+        </div>
+        <div class="card-number">APP 04</div>
+      </div>
+      <div>
+        <div class="card-title">Cedolino Enti Locali</div>
+        <div class="card-desc">Anteprima e calcolo del cedolino stipendiale per dipendenti di Enti Locali. Simulazione voci retributive e trattenute.</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-url">cedolino-enti-locali.vercel.app</div>
+        <div class="card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <footer>
+    <div class="footer-left">
+      © 2026 <strong>Immedia S.p.A.</strong> — Tutti i diritti riservati.
+      Uso esclusivo interno. P.IVA 02154040808
+    </div>
+    <div class="footer-badge">v1.0 · Portale Interno</div>
+  </footer>
+
+</div>
+</body>
+</html>
