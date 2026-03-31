@@ -339,6 +339,38 @@
       animation: none;
     }
 
+    /* Lino card — special violet style */
+.app-card.lino {
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border-color: rgba(124,58,237,0.3);
+}
+
+.app-card.lino:hover {
+  border-color: #7C3AED;
+  box-shadow: 0 8px 32px rgba(124,58,237,0.18), 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.card-icon.lino   { background: rgba(124,58,237,0.12); color: #7C3AED; }
+
+.lino .card-num {
+  background: rgba(124,58,237,0.12);
+  color: #6D28D9;
+}
+
+.lino .card-footer {
+  border-top-color: rgba(124,58,237,0.2);
+}
+
+/* Lino full-width card */
+.lino-row {
+  animation: fadeUp 0.5s ease 0.77s both;
+  margin-top: 16px;
+}
+
+.lino-row .app-card {
+  animation: none;
+}
+
     /* ── FOOTER ── */
     footer {
       margin-top: 56px;
@@ -592,6 +624,32 @@
       </div>
     </a>
   </div>
+
+  <!-- SUPER LINO ROW — full width -->
+<div class="lino-row">
+  <a class="app-card lino" href="https://notebooklm.google.com/notebook/87d378d4-84c6-4840-85bc-1cbe4e207662" target="_blank" rel="noopener noreferrer">
+    <div class="card-top">
+      <div class="card-icon lino">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+        </svg>
+      </div>
+      <div class="card-num">ULTIMO MIGLIO</div>
+    </div>
+    <div>
+      <div class="card-title">🚀 Super Lino</div>
+      <div class="card-desc">Chatbot AI per l'assistenza ultimo miglio. Supporto operativo avanzato per la gestione delle consegne e delle problematiche di prossimità al cliente finale.</div>
+    </div>
+    <div class="card-footer">
+      <div class="card-url">notebooklm.google.com · Assistenza Ultimo Miglio</div>
+      <div class="card-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/>
+        </svg>
+      </div>
+    </div>
+  </a>
+</div>
 
   <footer>
     <div class="footer-left">
