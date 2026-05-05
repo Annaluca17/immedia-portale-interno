@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const ACCESS_PWD = (import.meta.env.VITE_ACCESS_PASSWORD ?? '').trim();
+
 export default function LoginGate() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -11,7 +13,7 @@ export default function LoginGate() {
     e.preventDefault();
     setLoading(true);
 
-    if (password === import.meta.env.VITE_ACCESS_PASSWORD) {
+    if (password.trim() === ACCESS_PWD) {
       localStorage.setItem('immedia_auth', 'true');
       navigate('/');
     } else {
@@ -67,6 +69,12 @@ export default function LoginGate() {
             {loading ? 'Accesso in corso...' : 'Accedi'}
           </button>
         </form>
+
+        {ACCESS_PWD === '' && (
+          <p style={styles.devWarning}>
+            ⚠ Variabile VITE_ACCESS_PASSWORD non configurata.
+          </p>
+        )}
       </div>
     </div>
   );
@@ -93,16 +101,10 @@ const styles = {
     alignItems: 'center',
     gap: '8px',
   },
-  logoWrap: {
-    marginBottom: '16px',
-  },
-  logo: {
-    maxWidth: '180px',
-    height: 'auto',
-    display: 'block',
-  },
+  logoWrap: { marginBottom: '16px' },
+  logo: { maxWidth: '180px', height: 'auto', display: 'block' },
   title: {
-    fontFamily: 'var(--font-heading)',
+    fontFamily: 'var(--font-display)',
     fontSize: '22px',
     fontWeight: '700',
     color: 'var(--immedia-navy)',
@@ -123,11 +125,7 @@ const styles = {
     gap: '16px',
     marginTop: '8px',
   },
-  fieldWrap: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px',
-  },
+  fieldWrap: { display: 'flex', flexDirection: 'column', gap: '6px' },
   label: {
     fontFamily: 'var(--font-body)',
     fontSize: '13px',
@@ -143,13 +141,12 @@ const styles = {
     outline: 'none',
     color: 'var(--immedia-text-dark)',
     background: 'var(--immedia-bg-white)',
-    transition: 'border-color var(--transition-fast)',
     width: '100%',
   },
   error: {
     fontFamily: 'var(--font-body)',
     fontSize: '13px',
-    color: 'var(--color-error)',
+    color: '#DC2626',
     textAlign: 'center',
   },
   button: {
@@ -163,7 +160,13 @@ const styles = {
     padding: '12px',
     width: '100%',
     cursor: 'pointer',
-    transition: 'background var(--transition-fast)',
     marginTop: '4px',
+  },
+  devWarning: {
+    fontFamily: 'var(--font-body)',
+    fontSize: '12px',
+    color: '#C48820',
+    textAlign: 'center',
+    marginTop: '8px',
   },
 };
