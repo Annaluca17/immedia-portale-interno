@@ -1,0 +1,50 @@
+/* ============================================================
+   IMMEDIA S.p.A. — DESIGN SYSTEM
+   colors_and_type.css  — Token colore e tipografia
+   ============================================================ */
+
+:root {
+  /* ── Palette brand ─────────────────────────────────────── */
+  --immedia-cyan:    #00AEEF;   /* PRIMARY — logo, accenti, stato attivo   */
+  --immedia-navy:    #1E2939;   /* DARK    — header, testo scuro            */
+  --immedia-ocean:   #0369A1;   /* MID     — interactive hover, link        */
+  --immedia-blue:    #2563EB;   /* BRIGHT  — focus ring, CTA secondari      */
+  --immedia-gold:    #C48820;   /* ACCENT  — badge "Avanzato", highlight    */
+
+  /* ── Sfondi ────────────────────────────────────────────── */
+  --immedia-bg-white: #FFFFFF;
+  --immedia-bg-light: #F9FAFB;   /* sfondo pagina principale                */
+  --immedia-bg-ice:   #EFF6FF;   /* card hover, sidebar item attivo         */
+  --immedia-bg-sky:   #DBEAFE;   /* sfondi leggeri, badge                   */
+
+  /* ── Testo ─────────────────────────────────────────────── */
+  --immedia-text-dark:  #333333;
+  --immedia-text-med:   #4A5565;
+  --immedia-text-muted: #6A7282;
+  --immedia-text-light: #9CA3AF;
+
+  /* ── Bordi & ombre ─────────────────────────────────────── */
+  --color-border:  #E5E7EB;
+  --shadow-sm:     0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md:     0 4px 12px rgba(0, 0, 0, 0.10);
+  --shadow-lg:     0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* ── Tipografia ─────────────────────────────────────────── */
+  --font-heading: 'Nunito', Arial, sans-serif;
+  --font-body:    'Inter', Arial, sans-serif;
+
+  /* ── Stato ─────────────────────────────────────────────── */
+  --color-success: #059669;
+  --color-error:   #DC2626;
+  --color-warning: #D97706;
+
+  /* ── Border radius ─────────────────────────────────────── */
+  --radius-sm:  6px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+
+  /* ── Transizioni ────────────────────────────────────────── */
+  --transition-fast:   150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow:   300ms ease;
+}
