@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Receipt, TrendingUp, Calculator, FileText, Landmark, Gavel,
-  Database, Bot, Zap, ExternalLink, ArrowRight,
+  Database, Bot, Zap, Coins, ExternalLink, ArrowRight,
 } from 'lucide-react';
 
 const iconMap = {
@@ -15,6 +15,7 @@ const iconMap = {
   database: Database,
   bot: Bot,
   zap: Zap,
+  coins: Coins,
 };
 
 function AppIcon({ name, size = 20 }) {

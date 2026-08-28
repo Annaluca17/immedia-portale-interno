@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Receipt, TrendingUp, Calculator, FileText, Landmark, Gavel,
-  Database, Bot, Zap, ChevronDown, ChevronRight, ExternalLink,
+  Database, Bot, Zap, Coins, ChevronDown, ChevronRight, ExternalLink,
 } from 'lucide-react';
 import { apps, aiAssistants, categories } from '../data/apps.js';
 
@@ -16,6 +16,7 @@ const iconMap = {
   database: Database,
   bot: Bot,
   zap: Zap,
+  coins: Coins,
 };
 
 function AppIcon({ name, size = 16 }) {

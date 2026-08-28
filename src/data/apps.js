@@ -60,6 +60,16 @@ export const apps = [
     badge: null,
   },
   {
+    id: "costo-dipendente",
+    label: "Costo Dipendente Enti Locali",
+    shortLabel: "Costo Dipendente",
+    description: "Costo annuo a carico dell'ente per il trattamento fondamentale: oneri riflessi, TFS/TFR e IRAP. Matrice posizione economica per percentuale di part-time.",
+    icon: "coins",
+    category: "gestione",
+    url: "https://costo-dipendente-chi.vercel.app",
+    badge: null,
+  },
+  {
     id: "inps-tools",
     label: "Strumenti INPS",
     shortLabel: "Strumenti INPS",
