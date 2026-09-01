@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ACCESS_PWD = (import.meta.env.VITE_ACCESS_PASSWORD ?? '').trim();
 
@@ -8,6 +8,11 @@ export default function LoginGate() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Chi arriva da un link condiviso a uno strumento deve ritrovarsi li dopo
+  // l'accesso, non sulla home.
+  const destinazione = location.state?.from?.pathname || '/';
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,7 +20,7 @@ export default function LoginGate() {
 
     if (password.trim() === ACCESS_PWD) {
       localStorage.setItem('immedia_auth', 'true');
-      navigate('/');
+      navigate(destinazione, { replace: true });
     } else {
       setError('Password non corretta. Riprova.');
       setLoading(false);
