@@ -1,227 +1,216 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  Receipt, TrendingUp, Calculator, FileText, Landmark, Gavel,
-  Database, Bot, Zap, Coins, ChevronDown, ChevronRight, ExternalLink,
-} from 'lucide-react';
-import { apps, aiAssistants, categories } from '../data/apps.js';
-
-const iconMap = {
-  receipt: Receipt,
-  'trending-up': TrendingUp,
-  calculator: Calculator,
-  'file-text': FileText,
-  landmark: Landmark,
-  gavel: Gavel,
-  database: Database,
-  bot: Bot,
-  zap: Zap,
-  coins: Coins,
-};
-
-function AppIcon({ name, size = 16 }) {
-  const Icon = iconMap[name];
-  return Icon ? <Icon size={size} /> : null;
-}
-
-function isAppActive(location, appId, subId) {
-  if (subId) return location.pathname === `/app/${appId}/${subId}`;
-  return location.pathname === `/app/${appId}`;
-}
+import { ChevronDown, ChevronRight, ExternalLink, Search, X } from 'lucide-react';
+import { apps, aiAssistants } from '../data/apps.js';
+import { cerca, rotta, apribile } from '../data/registro.js';
+import AppIcon from './AppIcon.jsx';
 
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [inpsExpanded, setInpsExpanded] = useState(
-    location.pathname.startsWith('/app/inps-tools')
+  const [query, setQuery] = useState('');
+
+  // Un gruppo si apre da solo quando contiene la voce corrente.
+  const gruppoCorrente = location.pathname.replace(/^\/app\/?/, '').split('/')[0];
+  const [aperti, setAperti] = useState(() =>
+    Object.fromEntries(apps.map((g) => [g.id, g.id === gruppoCorrente]))
   );
 
-  const calcApps = apps.filter((a) => a.category === 'calcolo');
-  const gestApps = apps.filter((a) => a.category === 'gestione');
-  const inpsApp = apps.find((a) => a.id === 'inps-tools');
+  const risultati = useMemo(() => cerca(query), [query]);
+  const inRicerca = query.trim().length > 0;
 
-  const handleNav = (path) => {
-    navigate(path);
-  };
-
-  const handleExternal = (url) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
+  const apri = (voce, percorso) => {
+    if (voce.tipo === 'esterno') {
+      window.open(voce.url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    navigate(rotta(percorso));
   };
 
   return (
     <aside style={styles.sidebar}>
-      <nav style={styles.nav}>
-
-        {/* CALCOLO */}
-        <SectionLabel label={categories.calcolo.label} />
-        {calcApps.map((app) => (
-          <NavItem
-            key={app.id}
-            icon={app.icon}
-            label={app.shortLabel}
-            active={isAppActive(location, app.id)}
-            onClick={() => handleNav(`/app/${app.id}`)}
-          />
-        ))}
-
-        {/* GESTIONE */}
-        <SectionLabel label={categories.gestione.label} />
-        {gestApps.map((app) => (
-          <NavItem
-            key={app.id}
-            icon={app.icon}
-            label={app.shortLabel}
-            badge={app.badge}
-            active={isAppActive(location, app.id)}
-            onClick={() => handleNav(`/app/${app.id}`)}
-          />
-        ))}
-
-        {/* ELABORAZIONE INPS */}
-        <SectionLabel label={categories.elaborazione.label} />
-        <NavItem
-          icon={inpsApp.icon}
-          label={inpsApp.shortLabel}
-          active={location.pathname.startsWith('/app/inps-tools')}
-          expandable
-          expanded={inpsExpanded}
-          onExpand={() => setInpsExpanded(!inpsExpanded)}
-          onClick={() => setInpsExpanded(!inpsExpanded)}
+      <div style={styles.ricercaBox}>
+        <Search size={14} style={styles.lente} />
+        <input
+          style={styles.ricerca}
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Cerca uno strumento"
+          aria-label="Cerca uno strumento"
         />
-        {inpsExpanded && inpsApp.subApps.map((sub) => (
-          <NavSubItem
-            key={sub.id}
-            label={sub.label}
-            active={isAppActive(location, 'inps-tools', sub.id)}
-            onClick={() => handleNav(`/app/inps-tools/${sub.id}`)}
-          />
-        ))}
+        {inRicerca && (
+          <button style={styles.pulisci} onClick={() => setQuery('')} aria-label="Azzera la ricerca">
+            <X size={13} />
+          </button>
+        )}
+      </div>
 
-        {/* AI ASSISTANTS */}
-        <SectionLabel label="Assistenti AI" />
-        {aiAssistants.map((ai) => (
-          <NavItem
-            key={ai.id}
-            icon={ai.icon}
-            label={ai.shortLabel}
-            external
-            onClick={() => handleExternal(ai.url)}
-          />
-        ))}
+      <nav style={styles.nav}>
+        {inRicerca ? (
+          risultati.length === 0 ? (
+            <p style={styles.nessuno}>Nessuno strumento per «{query}».</p>
+          ) : (
+            <>
+              <Etichetta testo={`${risultati.length} risultat${risultati.length === 1 ? 'o' : 'i'}`} />
+              {risultati.map(({ voce, percorso, gruppo }) => (
+                <Voce
+                  key={percorso.join('/')}
+                  voce={voce}
+                  sottotitolo={gruppo}
+                  attiva={location.pathname === rotta(percorso)}
+                  onClick={() => apri(voce, percorso)}
+                />
+              ))}
+            </>
+          )
+        ) : (
+          <>
+            {apps.map((gruppo) => (
+              <div key={gruppo.id}>
+                <Voce
+                  voce={gruppo}
+                  gruppo
+                  espanso={aperti[gruppo.id]}
+                  attiva={gruppoCorrente === gruppo.id}
+                  onClick={() => {
+                    // Un hub si apre anche come contenitore, e resta espanso per
+                    // mostrare i moduli; un gruppo puro si limita ad aprirsi e chiudersi.
+                    if (apribile(gruppo)) {
+                      setAperti((s) => ({ ...s, [gruppo.id]: true }));
+                      apri(gruppo, [gruppo.id]);
+                    } else {
+                      setAperti((s) => ({ ...s, [gruppo.id]: !s[gruppo.id] }));
+                    }
+                  }}
+                />
+                {aperti[gruppo.id] &&
+                  (gruppo.children || []).filter(apribile).map((figlio) => (
+                    <Voce
+                      key={figlio.id}
+                      voce={figlio}
+                      annidata
+                      attiva={location.pathname === rotta([gruppo.id, figlio.id])}
+                      onClick={() => apri(figlio, [gruppo.id, figlio.id])}
+                    />
+                  ))}
+              </div>
+            ))}
 
+            <Etichetta testo="Assistenti AI" />
+            {aiAssistants.map((ai) => (
+              <Voce key={ai.id} voce={ai} onClick={() => apri(ai, [ai.id])} />
+            ))}
+          </>
+        )}
       </nav>
 
-      <footer style={styles.footer}>
-        © 2025 Immedia S.p.A. — Uso esclusivo interno
-      </footer>
+      <footer style={styles.footer}>© 2025 Immedia S.p.A. — Uso esclusivo interno</footer>
     </aside>
   );
 }
 
-function SectionLabel({ label }) {
-  return (
-    <div style={styles.sectionLabel}>{label}</div>
-  );
+function Etichetta({ testo }) {
+  return <div style={styles.etichetta}>{testo}</div>;
 }
 
-function NavItem({ icon, label, active, badge, expandable, expanded, onClick, external }) {
-  const [hovered, setHovered] = useState(false);
-
-  const itemStyle = {
-    ...styles.navItem,
-    ...(active ? styles.navItemActive : {}),
-    ...(hovered && !active ? styles.navItemHover : {}),
-  };
-
-  const labelStyle = {
-    ...styles.navLabel,
-    ...(active ? styles.navLabelActive : {}),
-  };
+function Voce({ voce, attiva, gruppo, annidata, espanso, sottotitolo, onClick }) {
+  const [sopra, setSopra] = useState(false);
 
   return (
     <button
-      style={itemStyle}
+      style={{
+        ...styles.voce,
+        ...(annidata ? styles.voceAnnidata : {}),
+        ...(gruppo ? styles.voceGruppo : {}),
+        ...(attiva ? styles.voceAttiva : {}),
+        ...(sopra && !attiva ? styles.voceSopra : {}),
+      }}
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      title={label}
-      aria-label={label}
+      onMouseEnter={() => setSopra(true)}
+      onMouseLeave={() => setSopra(false)}
+      title={voce.label}
     >
-      <span style={{ ...styles.navIcon, ...(active ? { color: 'var(--immedia-ocean)' } : {}) }}>
-        <AppIcon name={icon} size={16} />
+      {voce.icon && (
+        <span style={{ ...styles.icona, ...(attiva ? { color: 'var(--immedia-ocean)' } : {}) }}>
+          <AppIcon name={voce.icon} size={15} />
+        </span>
+      )}
+
+      <span style={styles.testi}>
+        <span
+          style={{
+            ...styles.testo,
+            ...(gruppo ? styles.testoGruppo : {}),
+            ...(annidata ? styles.testoAnnidato : {}),
+            ...(attiva ? styles.testoAttivo : {}),
+          }}
+        >
+          {voce.label}
+        </span>
+        {sottotitolo && <span style={styles.sottotitolo}>{sottotitolo}</span>}
       </span>
-      <span style={labelStyle}>{label}</span>
 
-      <span style={styles.navRight}>
-        {badge && (
-          <span style={styles.badge}>{badge}</span>
-        )}
-        {external && (
-          <ExternalLink size={12} style={{ opacity: 0.5 }} />
-        )}
-        {expandable && (
-          expanded
-            ? <ChevronDown size={14} style={{ opacity: 0.6 }} />
-            : <ChevronRight size={14} style={{ opacity: 0.6 }} />
-        )}
-        {active && !expandable && !external && (
-          <span style={styles.activeDot} />
-        )}
+      <span style={styles.destra}>
+        {voce.badge && <span style={styles.badge}>{voce.badge}</span>}
+        {voce.tipo === 'desktop' && <span style={styles.badgeDesktop}>PC</span>}
+        {voce.tipo === 'esterno' && <ExternalLink size={12} style={{ opacity: 0.5 }} />}
+        {gruppo && (espanso ? <ChevronDown size={14} style={{ opacity: 0.6 }} /> : <ChevronRight size={14} style={{ opacity: 0.6 }} />)}
+        {attiva && !gruppo && voce.tipo !== 'esterno' && <span style={styles.pallino} />}
       </span>
-    </button>
-  );
-}
-
-function NavSubItem({ label, active, onClick }) {
-  const [hovered, setHovered] = useState(false);
-
-  const itemStyle = {
-    ...styles.navItem,
-    ...styles.navSubItem,
-    ...(active ? styles.navItemActive : {}),
-    ...(hovered && !active ? styles.navItemHover : {}),
-  };
-
-  const labelStyle = {
-    ...styles.navLabel,
-    ...(active ? styles.navLabelActive : {}),
-    fontSize: '12px',
-  };
-
-  return (
-    <button
-      style={itemStyle}
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      title={label}
-      aria-label={label}
-    >
-      <span style={labelStyle}>{label}</span>
-      {active && <span style={styles.activeDot} />}
     </button>
   );
 }
 
 const styles = {
   sidebar: {
-    width: '224px',
+    width: '256px',
     flexShrink: 0,
     background: 'var(--immedia-bg-white)',
     borderRight: '1px solid var(--color-border)',
     display: 'flex',
     flexDirection: 'column',
-    overflowY: 'auto',
-    overflowX: 'hidden',
+    overflow: 'hidden',
+  },
+  ricercaBox: {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    padding: '10px 10px 6px',
+    flexShrink: 0,
+  },
+  lente: { position: 'absolute', left: '20px', color: 'var(--immedia-text-light)', pointerEvents: 'none' },
+  ricerca: {
+    width: '100%',
+    padding: '7px 26px 7px 30px',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--radius-md)',
+    background: 'var(--immedia-bg-light)',
+    fontFamily: 'var(--font-body)',
+    fontSize: '12.5px',
+    color: 'var(--immedia-text-dark)',
+    outline: 'none',
+  },
+  pulisci: {
+    position: 'absolute',
+    right: '18px',
+    display: 'flex',
+    border: 'none',
+    background: 'transparent',
+    color: 'var(--immedia-text-light)',
+    cursor: 'pointer',
+    padding: 0,
   },
   nav: {
     flex: 1,
-    padding: '12px 8px',
+    padding: '4px 8px 12px',
     display: 'flex',
     flexDirection: 'column',
     gap: '2px',
+    overflowY: 'auto',
+    overflowX: 'hidden',
   },
-  sectionLabel: {
+  etichetta: {
     fontFamily: 'var(--font-body)',
     fontSize: '10px',
     fontWeight: '600',
@@ -229,9 +218,15 @@ const styles = {
     textTransform: 'uppercase',
     letterSpacing: '0.08em',
     padding: '12px 8px 4px',
-    marginTop: '4px',
   },
-  navItem: {
+  nessuno: {
+    fontFamily: 'var(--font-body)',
+    fontSize: '12.5px',
+    color: 'var(--immedia-text-muted)',
+    padding: '14px 8px',
+    lineHeight: 1.5,
+  },
+  voce: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
@@ -245,41 +240,41 @@ const styles = {
     transition: 'background var(--transition-fast)',
     fontFamily: 'var(--font-body)',
   },
-  navItemActive: {
-    background: 'var(--immedia-bg-ice)',
-  },
-  navItemHover: {
-    background: '#F3F4F6',
-  },
-  navSubItem: {
-    paddingLeft: '36px',
-  },
-  navIcon: {
-    color: 'var(--immedia-text-muted)',
-    display: 'flex',
-    alignItems: 'center',
-    flexShrink: 0,
-  },
-  navLabel: {
+  voceGruppo: { marginTop: '8px' },
+  voceAnnidata: { paddingLeft: '30px' },
+  voceAttiva: { background: 'var(--immedia-bg-ice)' },
+  voceSopra: { background: '#F3F4F6' },
+  icona: { color: 'var(--immedia-text-muted)', display: 'flex', alignItems: 'center', flexShrink: 0 },
+  testi: { display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 },
+  testo: {
     fontFamily: 'var(--font-body)',
-    fontSize: '13px',
+    fontSize: '12.5px',
     fontWeight: '400',
     color: 'var(--immedia-text-med)',
-    flex: 1,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
-  navLabelActive: {
-    color: 'var(--immedia-ocean)',
-    fontWeight: '600',
+  testoGruppo: {
+    fontFamily: 'var(--font-heading)',
+    fontSize: '11px',
+    fontWeight: '700',
+    color: 'var(--immedia-navy)',
+    textTransform: 'uppercase',
+    // I nomi di famiglia sono lunghi: senza spaziatura extra entrano tutti.
+    letterSpacing: '0.02em',
   },
-  navRight: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    flexShrink: 0,
+  testoAnnidato: { fontSize: '12.5px' },
+  testoAttivo: { color: 'var(--immedia-ocean)', fontWeight: '600' },
+  sottotitolo: {
+    fontFamily: 'var(--font-body)',
+    fontSize: '10.5px',
+    color: 'var(--immedia-text-light)',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
+  destra: { display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 },
   badge: {
     fontFamily: 'var(--font-body)',
     fontSize: '9px',
@@ -291,13 +286,18 @@ const styles = {
     padding: '1px 5px',
     letterSpacing: '0.03em',
   },
-  activeDot: {
-    width: '6px',
-    height: '6px',
-    borderRadius: '50%',
-    background: 'var(--immedia-cyan)',
-    flexShrink: 0,
+  badgeDesktop: {
+    fontFamily: 'var(--font-body)',
+    fontSize: '9px',
+    fontWeight: '600',
+    color: 'var(--immedia-text-muted)',
+    background: '#F3F4F6',
+    border: '1px solid var(--color-border)',
+    borderRadius: '3px',
+    padding: '1px 5px',
+    letterSpacing: '0.03em',
   },
+  pallino: { width: '6px', height: '6px', borderRadius: '50%', background: 'var(--immedia-cyan)', flexShrink: 0 },
   footer: {
     fontFamily: 'var(--font-body)',
     fontSize: '11px',
@@ -305,5 +305,6 @@ const styles = {
     textAlign: 'center',
     padding: '12px 8px',
     borderTop: '1px solid var(--color-border)',
+    flexShrink: 0,
   },
 };

@@ -2,9 +2,10 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Shell from './components/Shell.jsx';
 import LoginGate from './components/LoginGate.jsx';
 import AppViewer from './components/AppViewer.jsx';
+import SchedaDesktop from './components/SchedaDesktop.jsx';
 import Home from './pages/Home.jsx';
 import NotFound from './pages/NotFound.jsx';
-import { apps } from './data/apps.js';
+import { trova, apribile } from './data/registro.js';
 
 function isAuthenticated() {
   return localStorage.getItem('immedia_auth') === 'true';
@@ -18,27 +19,21 @@ function RequireAuth({ children }) {
   return children;
 }
 
+// Risolve un percorso di qualunque profondita: /app/previdenza/tfr.
 function AppRoute() {
   const location = useLocation();
-  const pathAfterApp = location.pathname.replace(/^\/app\/?/, '');
-  const parts = pathAfterApp.split('/').filter(Boolean);
-  const appId = parts[0];
-  const subId = parts[1];
+  const segmenti = location.pathname
+    .replace(/^\/app\/?/, '')
+    .split('/')
+    .filter(Boolean);
 
-  if (appId === 'inps-tools' && subId) {
-    const inpsApp = apps.find((a) => a.id === 'inps-tools');
-    const sub = inpsApp?.subApps?.find((s) => s.id === subId);
-    if (sub) {
-      return <AppViewer appUrl={sub.url} appLabel={sub.label} />;
-    }
+  const voce = trova(segmenti);
+  if (!voce || !apribile(voce)) return <Navigate to="/" replace />;
+
+  if (voce.tipo === 'desktop') {
+    return <SchedaDesktop voce={voce} />;
   }
-
-  const app = apps.find((a) => a.id === appId);
-  if (app && app.url) {
-    return <AppViewer appUrl={app.url} appLabel={app.label} />;
-  }
-
-  return <Navigate to="/" replace />;
+  return <AppViewer voce={voce} percorso={segmenti} />;
 }
 
 export default function App() {

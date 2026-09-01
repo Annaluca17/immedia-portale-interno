@@ -1,115 +1,64 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Receipt, TrendingUp, Calculator, FileText, Landmark, Gavel,
-  Database, Bot, Zap, Coins, ExternalLink, ArrowRight,
-} from 'lucide-react';
+import { ArrowRight, ExternalLink, Terminal } from 'lucide-react';
+import { rotta } from '../data/registro.js';
+import AppIcon from './AppIcon.jsx';
 
-const iconMap = {
-  receipt: Receipt,
-  'trending-up': TrendingUp,
-  calculator: Calculator,
-  'file-text': FileText,
-  landmark: Landmark,
-  gavel: Gavel,
-  database: Database,
-  bot: Bot,
-  zap: Zap,
-  coins: Coins,
-};
-
-function AppIcon({ name, size = 20 }) {
-  const Icon = iconMap[name];
-  return Icon ? <Icon size={size} /> : null;
-}
-
-export default function AppCard({ app, isAI = false }) {
-  const [hovered, setHovered] = useState(false);
+export default function AppCard({ voce, percorso, ai = false }) {
+  const [sopra, setSopra] = useState(false);
   const navigate = useNavigate();
 
-  const cardStyle = {
-    ...styles.card,
-    ...(hovered ? styles.cardHover : {}),
-    borderTop: isAI
-      ? '3px solid var(--immedia-gold)'
-      : '3px solid var(--immedia-cyan)',
-  };
+  const esterna = voce.tipo === 'esterno';
+  const desktop = voce.tipo === 'desktop';
 
-  const handleOpen = (url, path) => {
-    if (url && (app.openExternal || isAI)) {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    } else if (path) {
-      navigate(path);
+  const apri = () => {
+    if (esterna) {
+      window.open(voce.url, '_blank', 'noopener,noreferrer');
+      return;
     }
+    navigate(rotta(percorso));
   };
-
-  const isGroup = !!app.subApps;
 
   return (
     <div
-      style={cardStyle}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      style={{
+        ...styles.card,
+        ...(sopra ? styles.cardSopra : {}),
+        borderTop: `3px solid ${ai ? 'var(--immedia-gold)' : 'var(--immedia-cyan)'}`,
+      }}
+      onMouseEnter={() => setSopra(true)}
+      onMouseLeave={() => setSopra(false)}
     >
-      {/* Header card */}
-      <div style={styles.cardHeader}>
-        <div style={{
-          ...styles.iconWrap,
-          background: isAI ? 'rgba(196,136,32,0.08)' : 'var(--immedia-bg-ice)',
-          color: isAI ? 'var(--immedia-gold)' : 'var(--immedia-cyan)',
-        }}>
-          <AppIcon name={app.icon} size={20} />
+      <div style={styles.testata}>
+        <div
+          style={{
+            ...styles.icona,
+            background: ai ? 'rgba(196,136,32,0.08)' : 'var(--immedia-bg-ice)',
+            color: ai ? 'var(--immedia-gold)' : 'var(--immedia-cyan)',
+          }}
+        >
+          <AppIcon name={voce.icon} size={20} />
         </div>
-
         <div style={styles.badgeWrap}>
-          {isAI && <span style={styles.aiBadge}>AI</span>}
-          {app.badge && <span style={styles.advBadge}>{app.badge}</span>}
+          {ai && <span style={styles.badgeAi}>AI</span>}
+          {desktop && (
+            <span style={styles.badgeDesktop}>
+              <Terminal size={10} />
+              <span>Da PC</span>
+            </span>
+          )}
+          {voce.badge && <span style={styles.badgeAvanzato}>{voce.badge}</span>}
         </div>
       </div>
 
-      {/* Titolo + descrizione */}
-      <h3 style={styles.cardTitle}>{app.label}</h3>
-      <p style={styles.cardDesc}>{app.description}</p>
+      <h3 style={styles.titolo}>{voce.label}</h3>
+      <p style={styles.descrizione}>{voce.description}</p>
 
-      {/* Footer — azioni */}
-      <div style={styles.cardFooter}>
-        {isAI && (
-          <button
-            style={styles.btnPrimary}
-            onClick={() => handleOpen(app.url)}
-            aria-label={`Avvia ${app.label}`}
-          >
-            <ExternalLink size={13} />
-            <span>Avvia</span>
-          </button>
-        )}
-
-        {!isAI && !isGroup && (
-          <button
-            style={styles.btnPrimary}
-            onClick={() => handleOpen(null, `/app/${app.id}`)}
-            aria-label={`Apri ${app.label}`}
-          >
-            <ArrowRight size={13} />
-            <span>Apri</span>
-          </button>
-        )}
-
-        {isGroup && (
-          <div style={styles.subBtns}>
-            {app.subApps.map((sub) => (
-              <button
-                key={sub.id}
-                style={styles.btnOutline}
-                onClick={() => navigate(`/app/inps-tools/${sub.id}`)}
-                title={sub.label}
-                aria-label={sub.label}
-              >
-                {sub.id === 'uniemens' ? 'UniEmens' : 'INPS Extractor'}
-              </button>
-            ))}
-          </div>
-        )}
+      <div style={styles.piede}>
+        <button style={esterna ? styles.bottoneEsterno : styles.bottone} onClick={apri}>
+          {esterna ? <ExternalLink size={13} /> : <ArrowRight size={13} />}
+          <span>{esterna ? 'Apri' : desktop ? 'Istruzioni' : 'Apri'}</span>
+        </button>
       </div>
     </div>
   );
@@ -117,115 +66,102 @@ export default function AppCard({ app, isAI = false }) {
 
 const styles = {
   card: {
-    background: 'var(--immedia-bg-white)',
-    borderRadius: '12px',
-    border: '1px solid var(--color-border)',
-    boxShadow: 'var(--shadow-sm)',
-    padding: '20px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
-    transition: 'box-shadow var(--transition-normal), transform var(--transition-normal)',
-    cursor: 'default',
+    gap: '10px',
+    background: 'var(--immedia-bg-white)',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--radius-lg)',
+    padding: '18px 20px 16px',
+    transition: 'box-shadow var(--transition-normal), transform var(--transition-fast)',
+    height: '100%',
   },
-  cardHover: {
-    boxShadow: 'var(--shadow-md)',
-    transform: 'translateY(-2px)',
-  },
-  cardHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: '4px',
-  },
-  iconWrap: {
+  cardSopra: { boxShadow: 'var(--shadow-md)', transform: 'translateY(-2px)' },
+  testata: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px' },
+  icona: {
     width: '40px',
     height: '40px',
-    borderRadius: '10px',
+    borderRadius: 'var(--radius-md)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
   },
-  badgeWrap: {
-    display: 'flex',
-    gap: '6px',
-  },
-  aiBadge: {
+  badgeWrap: { display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'flex-end' },
+  badgeAi: {
     fontFamily: 'var(--font-body)',
-    fontSize: '10px',
+    fontSize: '9.5px',
     fontWeight: '700',
     color: 'var(--immedia-gold)',
     background: 'rgba(196,136,32,0.1)',
     border: '1px solid rgba(196,136,32,0.3)',
-    borderRadius: '4px',
-    padding: '2px 7px',
-    letterSpacing: '0.05em',
+    borderRadius: '3px',
+    padding: '2px 6px',
   },
-  advBadge: {
+  badgeAvanzato: {
     fontFamily: 'var(--font-body)',
-    fontSize: '10px',
+    fontSize: '9.5px',
     fontWeight: '600',
     color: 'var(--immedia-gold)',
     background: 'rgba(196,136,32,0.1)',
     border: '1px solid rgba(196,136,32,0.3)',
-    borderRadius: '4px',
-    padding: '2px 7px',
+    borderRadius: '3px',
+    padding: '2px 6px',
   },
-  cardTitle: {
+  badgeDesktop: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    fontFamily: 'var(--font-body)',
+    fontSize: '9.5px',
+    fontWeight: '600',
+    color: 'var(--immedia-text-muted)',
+    background: '#F3F4F6',
+    border: '1px solid var(--color-border)',
+    borderRadius: '3px',
+    padding: '2px 6px',
+  },
+  titolo: {
     fontFamily: 'var(--font-heading)',
     fontSize: '15px',
     fontWeight: '700',
     color: 'var(--immedia-navy)',
-    lineHeight: '1.3',
+    lineHeight: 1.3,
   },
-  cardDesc: {
+  descrizione: {
     fontFamily: 'var(--font-body)',
-    fontSize: '12px',
+    fontSize: '12.5px',
     color: 'var(--immedia-text-muted)',
-    lineHeight: '1.5',
-    display: '-webkit-box',
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
+    lineHeight: 1.55,
     flex: 1,
   },
-  cardFooter: {
-    marginTop: '8px',
-    display: 'flex',
-    gap: '8px',
-  },
-  btnPrimary: {
+  piede: { display: 'flex', marginTop: '4px' },
+  bottone: {
     display: 'flex',
     alignItems: 'center',
-    gap: '5px',
-    fontFamily: 'var(--font-body)',
-    fontSize: '12px',
-    fontWeight: '600',
-    color: '#ffffff',
-    background: 'var(--immedia-cyan)',
+    gap: '6px',
+    padding: '6px 14px',
+    borderRadius: 'var(--radius-md)',
     border: 'none',
-    borderRadius: 'var(--radius-sm)',
-    padding: '7px 14px',
-    cursor: 'pointer',
-    transition: 'background var(--transition-fast)',
-  },
-  subBtns: {
-    display: 'flex',
-    gap: '8px',
-    flexWrap: 'wrap',
-  },
-  btnOutline: {
+    background: 'var(--immedia-cyan)',
+    color: '#fff',
     fontFamily: 'var(--font-body)',
-    fontSize: '12px',
+    fontSize: '12.5px',
     fontWeight: '600',
-    color: 'var(--immedia-cyan)',
-    background: 'transparent',
-    border: '1.5px solid var(--immedia-cyan)',
-    borderRadius: 'var(--radius-sm)',
-    padding: '6px 12px',
     cursor: 'pointer',
-    transition: 'background var(--transition-fast), color var(--transition-fast)',
-    whiteSpace: 'nowrap',
+  },
+  bottoneEsterno: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '6px 14px',
+    borderRadius: 'var(--radius-md)',
+    border: '1px solid var(--color-border)',
+    background: 'var(--immedia-bg-white)',
+    color: 'var(--immedia-ocean)',
+    fontFamily: 'var(--font-body)',
+    fontSize: '12.5px',
+    fontWeight: '600',
+    cursor: 'pointer',
   },
 };
