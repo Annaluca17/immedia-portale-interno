@@ -1,12 +1,17 @@
 import { Terminal, FolderOpen, ExternalLink, Copy, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { segnaRecente } from '../data/preferenze.js';
 
 // Alcuni strumenti girano sul PC dell'operatore e non si possono incorniciare.
 // Invece di lasciarli fuori dal portale, il portale ne mostra la scheda
 // d'avvio: dove sta la cartella, cosa lanciare, cosa serve prima.
-export default function SchedaDesktop({ voce }) {
+export default function SchedaDesktop({ voce, percorso }) {
   const [copiato, setCopiato] = useState(false);
   const avvio = voce.avvio || {};
+
+  useEffect(() => {
+    if (percorso) segnaRecente(percorso);
+  }, [percorso]);
 
   const copiaCartella = async () => {
     try {
@@ -23,7 +28,7 @@ export default function SchedaDesktop({ voce }) {
       <div style={styles.testata}>
         <span style={styles.etichetta}>
           <Terminal size={12} />
-          <span>Strumento da PC</span>
+          <span>{voce.stato === 'in-pubblicazione' ? 'Pronto, da pubblicare' : 'Strumento da PC'}</span>
         </span>
         <h1 style={styles.titolo}>{voce.label}</h1>
         <p style={styles.descrizione}>{voce.description}</p>

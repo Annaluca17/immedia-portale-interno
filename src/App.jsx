@@ -31,7 +31,7 @@ function AppRoute() {
   if (!voce || !apribile(voce)) return <Navigate to="/" replace />;
 
   if (voce.tipo === 'desktop') {
-    return <SchedaDesktop voce={voce} />;
+    return <SchedaDesktop voce={voce} percorso={segmenti} />;
   }
   return <AppViewer voce={voce} percorso={segmenti} />;
 }

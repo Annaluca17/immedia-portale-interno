@@ -2,7 +2,7 @@ import {
   Receipt, TrendingUp, Calculator, FileText, Landmark, Gavel, Database, Bot, Zap,
   Coins, CalendarDays, CalendarCheck, UserCog, UserCheck, UserMinus, Users,
   FileSpreadsheet, FileSearch, FileCog, Table, Terminal, Layers, Clock, Mail,
-  Banknote, ClipboardList,
+  Banknote, ClipboardList, Star,
 } from 'lucide-react';
 
 // Unica mappa nome -> icona del portale: sidebar e card leggono da qui.
@@ -33,6 +33,7 @@ const iconMap = {
   mail: Mail,
   banknote: Banknote,
   'clipboard-list': ClipboardList,
+  star: Star,
 };
 
 export default function AppIcon({ name, size = 16 }) {

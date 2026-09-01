@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ExternalLink, RotateCw } from 'lucide-react';
+import { ExternalLink, RotateCw, Star } from 'lucide-react';
 import { trova, rotta } from '../data/registro.js';
+import { segnaRecente, ePreferito, commutaPreferito } from '../data/preferenze.js';
 
 const ATTESA_MASSIMA = 10000;
 
@@ -14,6 +15,7 @@ function conEmbed(url) {
 export default function AppViewer({ voce, percorso }) {
   const [stato, setStato] = useState('caricamento');
   const [ricarica, setRicarica] = useState(0);
+  const [preferito, setPreferito] = useState(() => ePreferito(percorso));
   const timer = useRef(null);
   const src = conEmbed(voce.url);
 
@@ -27,6 +29,16 @@ export default function AppViewer({ voce, percorso }) {
     }, ATTESA_MASSIMA);
     return () => clearTimeout(timer.current);
   }, [src, ricarica]);
+
+  // Si conta come "aperto di recente" quando lo strumento arriva davvero, non
+  // quando la rotta cambia: un caricamento fallito non sporca l'elenco.
+  useEffect(() => {
+    if (stato === 'pronto') segnaRecente(percorso);
+  }, [stato, percorso]);
+
+  useEffect(() => {
+    setPreferito(ePreferito(percorso));
+  }, [percorso]);
 
   const alCaricamento = useCallback(() => {
     clearTimeout(timer.current);
@@ -61,6 +73,18 @@ export default function AppViewer({ voce, percorso }) {
           {stato === 'lento' && <span style={styles.statoLento}>non risponde</span>}
         </div>
         <div style={styles.azioni}>
+          <button
+            style={{ ...styles.azione, ...(preferito ? styles.azionePreferita : {}) }}
+            onClick={() => {
+              commutaPreferito(percorso);
+              setPreferito((p) => !p);
+            }}
+            title={preferito ? 'Togli dai preferiti' : 'Aggiungi ai preferiti'}
+            aria-pressed={preferito}
+          >
+            <Star size={13} fill={preferito ? 'currentColor' : 'none'} />
+            <span>Preferito</span>
+          </button>
           <button
             style={styles.azione}
             onClick={() => setRicarica((n) => n + 1)}
@@ -181,6 +205,7 @@ const styles = {
     textDecoration: 'none',
     whiteSpace: 'nowrap',
   },
+  azionePreferita: { color: 'var(--immedia-gold)', borderColor: 'rgba(196,136,32,0.4)' },
   telaio: { position: 'relative', flex: 1, minHeight: 0 },
   iframe: {
     width: '100%',

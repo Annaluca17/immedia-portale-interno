@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, ExternalLink, Terminal } from 'lucide-react';
+import { ArrowRight, ExternalLink, Terminal, Star } from 'lucide-react';
 import { rotta } from '../data/registro.js';
+import { ePreferito, commutaPreferito } from '../data/preferenze.js';
 import AppIcon from './AppIcon.jsx';
 
-export default function AppCard({ voce, percorso, ai = false }) {
+export default function AppCard({ voce, percorso, ai = false, onPreferitiCambiati }) {
   const [sopra, setSopra] = useState(false);
+  const [preferito, setPreferito] = useState(() => ePreferito(percorso));
   const navigate = useNavigate();
 
   const esterna = voce.tipo === 'esterno';
@@ -17,6 +19,12 @@ export default function AppCard({ voce, percorso, ai = false }) {
       return;
     }
     navigate(rotta(percorso));
+  };
+
+  const commuta = () => {
+    commutaPreferito(percorso);
+    setPreferito((p) => !p);
+    onPreferitiCambiati?.();
   };
 
   return (
@@ -40,6 +48,14 @@ export default function AppCard({ voce, percorso, ai = false }) {
           <AppIcon name={voce.icon} size={20} />
         </div>
         <div style={styles.badgeWrap}>
+          <button
+            style={{ ...styles.stella, ...(preferito ? styles.stellaAttiva : {}) }}
+            onClick={commuta}
+            title={preferito ? 'Togli dai preferiti' : 'Aggiungi ai preferiti'}
+            aria-pressed={preferito}
+          >
+            <Star size={14} fill={preferito ? 'currentColor' : 'none'} />
+          </button>
           {ai && <span style={styles.badgeAi}>AI</span>}
           {desktop && (
             <span style={styles.badgeDesktop}>
@@ -47,7 +63,10 @@ export default function AppCard({ voce, percorso, ai = false }) {
               <span>Da PC</span>
             </span>
           )}
-          {voce.badge && <span style={styles.badgeAvanzato}>{voce.badge}</span>}
+          {voce.stato === 'beta' && <span style={styles.badgeBeta}>Beta</span>}
+          {voce.stato === 'in-pubblicazione' && (
+            <span style={styles.badgeAttesa}>Da pubblicare</span>
+          )}
         </div>
       </div>
 
@@ -87,7 +106,37 @@ const styles = {
     justifyContent: 'center',
     flexShrink: 0,
   },
-  badgeWrap: { display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'flex-end' },
+  badgeWrap: { display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center' },
+  stella: {
+    display: 'flex',
+    padding: '3px',
+    border: 'none',
+    background: 'transparent',
+    color: 'var(--immedia-text-light)',
+    cursor: 'pointer',
+    borderRadius: 'var(--radius-sm)',
+  },
+  stellaAttiva: { color: 'var(--immedia-gold)' },
+  badgeBeta: {
+    fontFamily: 'var(--font-body)',
+    fontSize: '9.5px',
+    fontWeight: '600',
+    color: 'var(--immedia-ocean)',
+    background: 'var(--immedia-bg-ice)',
+    border: '1px solid var(--immedia-bg-sky)',
+    borderRadius: '3px',
+    padding: '2px 6px',
+  },
+  badgeAttesa: {
+    fontFamily: 'var(--font-body)',
+    fontSize: '9.5px',
+    fontWeight: '600',
+    color: 'var(--color-warning)',
+    background: 'rgba(217,119,6,0.1)',
+    border: '1px solid rgba(217,119,6,0.3)',
+    borderRadius: '3px',
+    padding: '2px 6px',
+  },
   badgeAi: {
     fontFamily: 'var(--font-body)',
     fontSize: '9.5px',

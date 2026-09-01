@@ -10,6 +10,7 @@
 //   'desktop'  — non e una pagina web: il portale mostra le istruzioni d'avvio
 //   'gruppo'   — solo contenitore, non apribile
 //
+// `stato` e facoltativo: 'beta' o 'in-pubblicazione' aggiungono un'etichetta.
 // `alias` alimenta la ricerca e non compare mai a schermo.
 
 export const apps = [
@@ -51,6 +52,27 @@ export const apps = [
           ],
           prerequisiti: 'Python 3.12 e le dipendenze in requirements.txt. I campioni reali vanno in fixtures/reali/, esclusi dal repository.',
           repo: 'https://github.com/Annaluca17/immedia-tools',
+        },
+      },
+      {
+        id: 'verifica-770',
+        label: 'Verifica 770 Enti Locali',
+        description: 'Confronta le quattro fonti del controllo: quietanze F24EP, riepilogo dei pagamenti dalla procedura stipendi, quadro SX e totali delle Certificazioni Uniche. I PDF non lasciano il computer.',
+        icon: 'file-search',
+        tipo: 'desktop',
+        stato: 'in-pubblicazione',
+        alias: ['770', 'quietanze', 'quadro sx', 'certificazioni uniche', 'cu', 'f24ep'],
+        avvio: {
+          // Pagina unica autosufficiente, gia pronta nel repository: manca solo
+          // il progetto Vercel. Appena c'e l'indirizzo questa voce diventa una
+          // normale voce iframe con la sua `url`.
+          cartella: 'C:\\Users\\<utente>\\Desktop\\Progetti Immedia\\Progetto HR Tools\\estrattore-f24ep-quietanze',
+          comandi: [
+            { file: 'Verifica 770 F24EP.html', cosa: 'Apribile con doppio clic, senza installare nulla.' },
+            { file: 'python build.py', cosa: 'Rigenera il file unico dopo una modifica ai sorgenti.' },
+          ],
+          prerequisiti: 'Nessuno per l’uso. Per pubblicarlo basta collegare il repository a un progetto Vercel: preset Other, nessun comando di build.',
+          repo: 'https://github.com/Annaluca17/verifica-770',
         },
       },
       {
@@ -162,6 +184,23 @@ export const apps = [
         icon: 'gavel',
         url: 'https://tristo-pignoratore.vercel.app',
         alias: ['pignoramento', 'cessione del quinto', 'trattenute', 'quinto'],
+      },
+      {
+        id: 'indennita-amministratori',
+        label: 'Indennita Amministratori Locali',
+        description: 'Indennita di funzione di sindaco, assessori, presidente e consiglieri secondo la L. 234/2021 e il DM 119/2000, con gettoni di presenza e oneri a carico dell’ente.',
+        icon: 'landmark',
+        tipo: 'desktop',
+        stato: 'in-pubblicazione',
+        alias: ['sindaco', 'assessori', 'consiglieri', 'gettoni', 'amministratori', 'indennita di funzione'],
+        avvio: {
+          cartella: 'C:\\Users\\<utente>\\Desktop\\Progetti Immedia\\Progetto HR Tools\\calcolo indennità amministratori',
+          comandi: [
+            { file: 'calcolo-indennita-amministratori.html', cosa: 'Apribile con doppio clic, senza installare nulla.' },
+          ],
+          prerequisiti: 'Nessuno per l’uso. Per pubblicarlo basta collegare il repository a un progetto Vercel: preset Other, nessun comando di build.',
+          repo: 'https://github.com/Annaluca17/indennita-amministratori',
+        },
       },
       {
         id: 'segretario',

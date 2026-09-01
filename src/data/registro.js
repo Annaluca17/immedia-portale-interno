@@ -38,6 +38,14 @@ export function rotta(percorso) {
   return `/app/${percorso.join('/')}`;
 }
 
+// Da 'previdenza/tfr' alla voce e al suo percorso, per rileggere preferiti e
+// recenti, che sono salvati come stringhe.
+export function daChiave(chiave) {
+  const percorso = chiave.split('/').filter(Boolean);
+  const voce = trova(percorso);
+  return voce && apribile(voce) ? { voce, percorso } : null;
+}
+
 // L'assistente non sta nell'albero: lo si cerca a parte.
 export function assistente(id) {
   return aiAssistants.find((a) => a.id === id) || null;
