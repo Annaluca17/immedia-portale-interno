@@ -343,6 +343,18 @@ export const apps = [
         url: 'https://preventivatore-inky.vercel.app/?modulo=startup',
         alias: ['preventivo', 'start-up', 'avvio', 'una tantum'],
       },
+      {
+        id: 'analisi-immedia',
+        label: 'Fascicoli Analisi e Lavorazioni',
+        description: 'Promemoria di analisi, service, plus e spot: dalla richiesta del commerciale alla chiusura della lavorazione.',
+        icon: 'clipboard-list',
+        url: 'https://analisi-immedia.vercel.app',
+        // Esterno, non iframe: i fascicoli vivono nel localStorage della pagina,
+        // e dentro un iframe il browser lo partiziona per sito ospitante. Aperta
+        // qui in cornice, mostrerebbe un archivio vuoto a chi la usa direttamente.
+        tipo: 'esterno',
+        alias: ['analisi', 'fascicoli', 'lavorazioni', 'relazioni finali', 'spot', 'code', 'xdesk'],
+      },
     ],
   },
 ];
