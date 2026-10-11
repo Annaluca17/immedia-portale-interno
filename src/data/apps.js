@@ -113,6 +113,15 @@ export const apps = [
         alias: ['dma2', 'e0', 'v1', 'denuncia', 'xml', 'variazione'],
       },
       {
+        id: 'analizzatore-posizioni',
+        label: 'Analizzatore Posizioni',
+        description: 'Dalla posizione INPS al flusso a variazione o all\'elenco SCAD, tutto nel browser.',
+        icon: 'file-search',
+        url: 'https://analizzatore-posizioni.vercel.app',
+        alias: ['posizione assicurativa', 'passweb', 'uniemens variazione', 'scad', 'elenco quadri', 'bdc'],
+        stato: 'beta',
+      },
+      {
         id: 'uniemens-privati',
         label: 'UniEmens Privatistico Builder',
         description: 'Denunce individuali del settore privato: dati retributivi, settimane, TipoLavStat, calendario giornaliero.',
