@@ -31,10 +31,10 @@ export const apps = [
       {
         id: 'f24ep-editor',
         label: 'Generatore F24 EP',
-        description: 'Produce il tracciato telematico F24 EP leggendo i flussi UniEmens: un rigo di versamento per periodo di riferimento. Si ferma al file, non invia.',
+        description: 'Produce il tracciato telematico F24 EP leggendo i flussi UniEmens: un rigo di versamento per periodo di riferimento. Ravvede un F24 EP non versato: interessi legali e sanzioni per rigo, file ravveduto e stampa. Si ferma al file, non invia.',
         icon: 'file-spreadsheet',
         url: 'https://f24epeditor.vercel.app',
-        alias: ['tracciato telematico', 'versamento', 'ravvedimento contributivo'],
+        alias: ['tracciato telematico', 'versamento', 'ravvedimento contributivo', 'ravvedimento', 'sanzioni', 'interessi'],
       },
       {
         id: 'quadratura-f24ep',
